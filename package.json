@@ -24,6 +24,7 @@
     "commander": "^10.0.0"
   },
   "bin": {
-    "ceremony": "./index.js"
+    "ceremony": "./index.js",
+    "@noble/curves": "^0.6.4"
   }
 }
