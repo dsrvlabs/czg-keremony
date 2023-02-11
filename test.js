@@ -1,5 +1,5 @@
 const fs = require('fs');
-const contribute = require('./contribute.js');
+const contribute = require('./contribution/contribution.js');
 const conversion = require('./contribution/coversion.js');
 
 
@@ -20,15 +20,14 @@ console.log('Create new contribution...');
 newContributions = contribute.contribute(contributions, BigInt(randValue));
 
 console.log('New Contributions', newContributions);
-
 console.log('Sample power', newContributions[0].powersOfTau.G1Powers[0]);
+
+newContributions = contribute.updateWitness(newContributions, BigInt(randValue));
 
 console.log('Convert back...');
 newContributions = conversion.encode(newContributions);
 
-// TODO: Add witness.
-
-// TODO: Store for compare.
+// Store for compare.
 jsonDump = JSON.stringify(newContributions, null, '\t');
 
 fs.writeFile('./dump.json', jsonDump, (err) => {
