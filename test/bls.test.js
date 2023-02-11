@@ -114,6 +114,28 @@ describe('power-of_tau', function() {
 
         console.log('Find fr', Fr);
     });
+
+    it('witness', function() {
+        const potPubkey = '0x93e02b6052719f607dacd3a088274f65596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e024aa2b2f08f0a91260805272dc51051c6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8';
+        const hexStr = potPubkey.substring(2);
+
+        // PotPub -> G2Affine
+        const util = bls.bls12_381.utils;
+        const hex = util.hexToBytes(hexStr);
+
+        const G2 = bls.bls12_381.CURVE.G2;
+        const G2Point = bls.bls12_381.G2.ProjectivePoint;
+
+        const potPubkeyAffine = G2.fromBytes(hex);
+        console.log(potPubkeyAffine);
+
+        const potPubkeyPrj = G2Point.fromAffine(potPubkeyAffine);
+
+        const newPubkeyPrj = potPubkeyPrj.multiply(2n)
+
+        console.log('New pub', newPubkeyPrj);
+        console.log('ret', util.bytesToHex(G2.toBytes(G2Point, newPubkeyPrj, true)));
+    });
 });
 
 // Spec from https://github.com/ethereum/kzg-ceremony-specs/blob/master/docs/participant/participant.md
