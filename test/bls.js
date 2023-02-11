@@ -74,9 +74,7 @@ describe('power-of_tau', function() {
         console.log('Affine to hex', revert);
         console.log('Affine to hex str1', util.bytesToHex(revert));
 
-        // TODO: Create new curve. (Necessary?)
-        // TODO: What is Fr's modulus.
-
+        // ----
         // ----
         const prjPointG1 = G1Point.fromAffine(affinePoint);
         prjPointG1.assertValidity();
@@ -107,6 +105,12 @@ describe('power-of_tau', function() {
     });
 
     // TODO: Transform all contributes to affine space.
+    it('fr', function() {
+        const G1 = bls.bls12_381.CURVE.G1;
+        const Fr = bls.bls12_381.CURVE.Fr;
+
+        console.log('Find fr', Fr);
+    });
 });
 
 // Spec from https://github.com/ethereum/kzg-ceremony-specs/blob/master/docs/participant/participant.md
