@@ -161,6 +161,22 @@ class Sequencer {
         }
     }
 
+    async contribute(sessionID, newContributions) {
+        try {
+            const res = await axios.post(`${sequencerURL}/contribute`, newContributions, {
+                headers: {
+                    "Authorization": `Bearer ${sessionID}`,
+                    "Content-Type": "application/json",
+                }
+            });
+            if (res.status !== 200) {
+            throw new Error(`Unexpected contribution error: ${res.status})`);
+            }
+            return res.data;
+        } catch (err) {
+            throw new Error(`Error Message: ${err.message}`);
+        }
+    }
 }
 
 module.exports = {
