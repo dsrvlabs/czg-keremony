@@ -7,7 +7,8 @@ const conversion = require('./contribution/coversion.js');
 const seq = require('./sequencerclient/sequencerClient.js');
 
 
-const url = 'https://kzg-ceremony-sequencer-dev.fly.dev';
+// const url = 'https://kzg-ceremony-sequencer-dev.fly.dev';
+const url = 'http://34.64.236.141:3000';
 
 
 function sleep(sec) {
@@ -74,12 +75,12 @@ program
         newContributions = conversion.encode(newContributions);
 
         const jsonDump = JSON.stringify(newContributions, null, '\t');
-
-        // TODO: Post contribute
-
         fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {
             console.log('Write error', err);
         });
+
+        const receipt = await sequencer.contribute(sessionID, newContributions);
+        console.log(receipt);
     });
 
 program.parse(process.argv);
