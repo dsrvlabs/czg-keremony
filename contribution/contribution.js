@@ -67,7 +67,7 @@ function updateWitness(contributions, rand) {
         const newPotPubkey = util.bytesToHex(G2.toBytes(G2Point, newPubkeyPrj, true));
         console.log('New PotPubkey', newPotPubkey);
 
-        contributions[i].potPubkey = newPotPubkey;
+        contributions[i].potPubkey = '0x' + newPotPubkey;
     }
 
     return contributions;
