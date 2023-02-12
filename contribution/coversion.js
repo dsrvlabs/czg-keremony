@@ -8,13 +8,14 @@ const G2Point = bls.bls12_381.G2.ProjectivePoint;
 
 function decode(contributions){
     for (var i = 0; i < contributions.length; i++) {
-        for(var j = 0; j< contributions[i].numG1Powers; j++){
+        for(var j = 0; j < contributions[i].numG1Powers; j++){
             var hexStr = contributions[i].powersOfTau.G1Powers[j].substring(2);
             var hex = util.hexToBytes(hexStr);
             var affinePoint = G1.fromBytes(hex);
             contributions[i].powersOfTau.G1Powers[j] = affinePoint; 
         }
-        for(var k = 0; k< contributions[i].numG2Powers; k++){
+
+        for(var k = 0; k < contributions[i].numG2Powers; k++){
             var hexStr = contributions[i].powersOfTau.G2Powers[k].substring(2);
             var hex = util.hexToBytes(hexStr);
             var affinePoint = G2.fromBytes(hex);
@@ -26,13 +27,16 @@ function decode(contributions){
 
 function encode(contributions){
     for (var i = 0; i < contributions.length; i++) {
-        for(var j = 0; j< contributions[i].numG1Powers; j++){
+        for(var j = 0; j < contributions[i].numG1Powers; j++){
             var affinePoint = contributions[i].powersOfTau.G1Powers[j];
+
+            console.log('afinepoint', affinePoint);
+
             var prj = G1Point.fromAffine(affinePoint);
             var revert = G1.toBytes(G1Point, prj, true);
             contributions[i].powersOfTau.G1Powers[j] = "0x"+util.bytesToHex(revert);
         }
-        for(var k = 0; k< contributions[i].numG2Powers; k++){
+        for(var k = 0; k < contributions[i].numG2Powers; k++){
             var affinePoint = contributions[i].powersOfTau.G2Powers[k];
             var prj = G2Point.fromAffine(affinePoint);
             var revert = G2.toBytes(G2Point, prj, true);
@@ -40,4 +44,10 @@ function encode(contributions){
         }
     }
     return contributions;
+}
+
+
+module.exports = {
+    decode: decode,
+    encode: encode,
 }

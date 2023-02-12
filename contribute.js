@@ -2,7 +2,6 @@ const bls = require('@noble/curves/bls12-381');
 
 
 // Define inputs.
-// TODO: Should convert serialized contributions to affine.
 // TODO: Confirm by initialContribution.json
 // TODO: Support multi-thread?
 function contribute(contributions, rand) {
@@ -17,37 +16,41 @@ function contribute(contributions, rand) {
 
     const util = bls.bls12_381.utils;
 
-    contributions.forEach(curContribution => {
-        console.log('Contribution...');
-
-        const g1Powers = curContribution.powersOfTau.G1Powers;
-        const g2Powers = curContribution.powersOfTau.G2Powers;
+    for(var i = 0; i < contributions.length; i++) {
+        const g1Powers = contributions[i].powersOfTau.G1Powers;
+        const g2Powers = contributions[i].powersOfTau.G2Powers;
 
         var xi = 1n;
-        for(var i = 0; i < curContribution.numG1Powers; i++) {
-        // for(var i = 0; i < 5; i++) {
-            // TODO: Should be prepared from arguments.
-            const g1Affine = G1.fromBytes(util.hexToBytes(g1Powers[i].substring(2)));
+        for(var j = 0; j < contributions[i].numG1Powers; j++) {
+            const g1Affine = g1Powers[j];
             const g1PrjPoint = G1Point.fromAffine(g1Affine);
 
             const g1NewPrjPoint = g1PrjPoint.multiply(xi);
-            const g1NewAffine = G1.toBytes(G1Point, g1NewPrjPoint, true)
+            // const g1NewAffine = G1.toBytes(G1Point, g1NewPrjPoint, true)
+            const g1NewAffine = g1NewPrjPoint.toAffine();
 
-            if (i < curContribution.numG2Powers) {
-                // TODO: Should be prepared from arguments.
-                const g2Affine = G2.fromBytes(util.hexToBytes(g2Powers[i].substring(2)));
+            //console.log(j, g1Powers[j], util.bytesToHex(g1NewAffine), xi);
+            contributions[i].powersOfTau.G1Powers[j] = g1NewAffine;
+
+            if (j < contributions[i].numG2Powers) {
+                const g2Affine = g2Powers[j];
                 const g2PrjPoint = G2Point.fromAffine(g2Affine);
 
                 const g2NewPrjPoint = g2PrjPoint.multiply(xi);
-                const g2NewAffine = G2.toBytes(G2Point, g2NewPrjPoint, true)
+                // const g2NewAffine = G2.toBytes(G2Point, g2NewPrjPoint, true)
+                const g2NewAffine = g2NewPrjPoint.toAffine();
+
+                //console.log(i, g1Powers[j], util.bytesToHex(g2NewAffine), xi);
+                contributions[i].powersOfTau.G2Powers[j] = g2NewAffine;
             }
 
             xi = (xi * rand) % Fr.ORDER;
 
-            // console.log(i, g1Powers[i], util.bytesToHex(g1NewAffine), xi);
+            //console.log('==============================================');
+
             // TODO: Store into object.
         }
-    });
+    };
 
     return contributions
 }
