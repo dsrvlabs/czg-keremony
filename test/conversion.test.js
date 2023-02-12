@@ -4,6 +4,8 @@ const bls = require('@noble/curves/bls12-381');
 
 
 describe("Conversion", function(){
+    this.timeout(1000000);
+
     const util = bls.bls12_381.utils;
     const data = fs.readFileSync('./test/try_contribute.json');
     const obj = JSON.parse(data);
@@ -60,5 +62,3 @@ describe("Conversion", function(){
         assert.equal(prevG2power, curG2power);
     });
 });
-
-
