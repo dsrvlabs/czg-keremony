@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 const program = require('commander');
+const fs = require('fs');
+const contribute = require('./contribution/contribution.js');
+const conversion = require('./contribution/coversion.js');
 const seq = require('./sequencerclient/sequencerClient.js');
 
 
@@ -56,13 +59,27 @@ program
 
         console.log('Start ceremony...');
 
-        console.log(resp.status);
-        console.log(resp.contributions);
+        console.log('Decoding...');
+        contributions = conversion.decode(resp.contributions);
 
-        // TODO: Get Random value.
-        // TODO: update power of tau.
-        // TODO: update witness.
+        const randValue = Math.floor(Math.random() * 100000); // TODO:
+
+        console.log('Update Power of Tau...');
+        var newContributions = contribute.contribute(contributions, BigInt(randValue));
+
+        console.log('Update Witnesses...');
+        newContributions = contribute.updateWitness(newContributions, BigInt(randValue));
+
+        console.log('Encoding...');
+        newContributions = conversion.encode(newContributions);
+
+        const jsonDump = JSON.stringify(newContributions, null, '\t');
+
+        // TODO: Post contribute
+
+        fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {
+            console.log('Write error', err);
+        });
     });
-
 
 program.parse(process.argv);
