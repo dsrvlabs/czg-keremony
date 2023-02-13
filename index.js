@@ -7,6 +7,7 @@ const conversion = require('./contribution/coversion.js');
 const seq = require('./sequencerclient/sequencerClient.js');
 
 
+// const url = 'https://seq.ceremony.ethereum.org';
 // const url = 'https://kzg-ceremony-sequencer-dev.fly.dev';
 const url = 'http://34.64.236.141:3000';
 
@@ -18,7 +19,6 @@ function sleep(sec) {
 program
     .version('0.1.0')
     .description('A Test CLI')
-
 
 program
     .command('auth')
@@ -39,26 +39,40 @@ program
 program
     .command('ceremony <sessionID>')
     .action(async sessionID => {
-        console.log(`Starting ceremony ${sessionID}`);
+        const RETRY_SEC = 30;
+
+        console.log('Starting ceremony...');
 
         const sequencer = new seq.Sequencer(url);
 
         var resp;
         while(true) {
             resp = await sequencer.tryContribute(sessionID);
+            if(resp.status === 200) {
+                if(resp.error != null) {
+                    const lobby = await sequencer.getStatus()
 
-            if(resp.status !== 200) {
-                const { status, msg } = resp;
+                    console.log(`- ${lobby.lobby_size} contributors are waiting...`);
+                    console.log(`${resp.error} - retry after ${RETRY_SEC} seconds`);
 
-                console.log(status, msg);
-                await sleep(10);
+                    await sleep(RETRY_SEC);
+                    continue
+                }
+                break;
+            }
+
+            if(resp.status === 400) {
+                console.log(resp.msg);
+                console.log(`Retry after ${RETRY_SEC} seconds`);
+                await sleep(RETRY_SEC);
                 continue;
+            } else {
+                console.log(`Error ${resp.status}`);
+                return;
             }
 
             break;
         }
-
-        console.log('Start ceremony...');
 
         console.log('Decoding...');
         contributions = conversion.decode(resp.contributions);
@@ -75,9 +89,7 @@ program
         newContributions = conversion.encode(newContributions);
 
         const jsonDump = JSON.stringify(newContributions, null, '\t');
-        fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {
-            console.log('Write error', err);
-        });
+        fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {});
 
         const receipt = await sequencer.contribute(sessionID, newContributions);
         console.log(receipt);

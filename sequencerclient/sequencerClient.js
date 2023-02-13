@@ -7,59 +7,12 @@ class Sequencer {
         this.url = url;
     }
 
-    getStatus(){
-        axios.get(this.url+"/info/status")
-            .then(response => {
-                if (response.status === 200) {
-                    // res.data.lobby_size
-                    // res.data.num_contributions
-                    // res.data.sequencer_address
-                    return response.data;
-                } else {
-                    console.error("getStatus Error, status code: " + response.status);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }
-
-    //Request a current transcript
-    getCurrentTranscript(){
-        axios.get(this.url+"/info/current_state")
-            .then(response => {
-                if (response.status === 200) {
-                    /* res.dats = {
-                "transcripts": [
-                    {
-                    "powersOfTau": {
-                        "G1Powers": [
-                        "string"
-                        ],
-                        "G2Powers": [
-                        "string"
-                        ]
-                    },
-                    "witness": {
-                        "runningProducts": [
-                        "string"
-                        ],
-                        "potPubkeys": [
-                        "string"
-                        ]
-                    }
-                    }
-                ]
-                }
-                */
-                    return response.data;
-                } else {
-                    console.error("getCurrentTranscript Error, status code: " + response.status);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
+    async getStatus(){
+        const resp = await axios.get(this.url+"/info/status");
+        return {
+            status: resp.status,
+            lobby_size: resp.data.lobby_size,
+        }
     }
 
     async requestLink() {
@@ -93,6 +46,8 @@ class Sequencer {
             return {
                 status: resp.status,
                 contributions: resp.data.contributions,
+                code: resp.data.code,
+                error: resp.data.error,
             };
         } catch (err) {
             return {
