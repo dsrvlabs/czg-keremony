@@ -1,6 +1,7 @@
 const fs = require('fs');
 const assert = require("assert");
 const bls = require('@noble/curves/bls12-381');
+const contribute = require('../contribution/contribution.js');
 
 const util = bls.bls12_381.utils;
 const G1 = bls.bls12_381.CURVE.G1;
@@ -156,3 +157,10 @@ describe('power-of_tau', function() {
 // def update_witness(contribution: Contribution, x: int) -> Contribution:
 //     contribution.pot_pubkey = bls.G2.mul(x, bls.G2.g2)
 //     return contribution
+
+describe('Random', function() {
+    it('Generate Random', function(){
+        var random = contribute.generateRandom();
+        console.log(random);
+    });
+});
