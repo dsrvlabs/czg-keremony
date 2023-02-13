@@ -63,13 +63,18 @@ program
         console.log('Decoding...');
         contributions = conversion.decode(resp.contributions);
 
-        const randValue = Math.floor(Math.random() * 100000); // TODO:
+        var rand = [];
+        for (var i =0; i < contributions.length; i++){
+            rand[i] = contribute.generateRandom();
+        }
 
         console.log('Update Power of Tau...');
-        var newContributions = contribute.contribute(contributions, BigInt(randValue));
+        var newContributions = contribute.contribute(contributions, rand);
 
         console.log('Update Witnesses...');
-        newContributions = contribute.updateWitness(newContributions, BigInt(randValue));
+        newContributions = contribute.updateWitness(newContributions, rand);
+
+        rand.length = 0;
 
         console.log('Encoding...');
         newContributions = conversion.encode(newContributions);
