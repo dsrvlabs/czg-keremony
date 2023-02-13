@@ -113,21 +113,14 @@ class Sequencer {
             delete msg.contributions[2].blsSignature
             delete msg.contributions[3].blsSignature
 
-            const tempMsg = JSON.stringify(msg);
-            fs.writeFile(`./temp.json`, tempMsg, (err) => {
-                console.log('Write error', err);
-            });
-
             const resp = await axios({
                 method: 'post',
-                url: `${sequencerURL}/contribute`,
+                url: `${this.url}/contribute`,
                 headers: {
                     "Authorization": `Bearer ${sessionID}`,
                     "Content-Type": "application/json;charset=utf-8",
                 },
                 data: msg,
-                // data: JSON.stringify(msg),
-                timeout: 1000000000,
             });
 
             if (resp.status !== 200) {
