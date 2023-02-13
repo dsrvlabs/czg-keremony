@@ -2,7 +2,6 @@ const fs = require('fs');
 const assert = require('assert');
 const seq = require('../sequencerclient/sequencerClient.js');
 
-
 describe('sequencer', function() {
     this.timeout(1000000);
 
@@ -28,7 +27,6 @@ describe('sequencer', function() {
         console.log(ret);
         assert.equal(ret.status, 400);
     });
-
 
 
     it('New Contributions', async function() {

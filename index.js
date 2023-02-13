@@ -49,17 +49,23 @@ program
         var resp;
         while(true) {
             resp = await sequencer.tryContribute(sessionID);
-            if(resp.status === 200) {
+            if(resp.status == 200) {
                 if(resp.error != null) {
-                    const lobby = await sequencer.getStatus()
-
-                    console.log(`- ${lobby.lobby_size} contributors are waiting...`);
                     console.log(`${resp.error} - retry after ${RETRY_SEC} seconds`);
-
                     await sleep(RETRY_SEC);
                     continue
                 }
                 break;
+            }
+
+            if(resp.status == 400) {
+                console.log(resp.msg);
+                console.log(`Retry after ${RETRY_SEC} seconds`);
+                await sleep(RETRY_SEC);
+                continue;
+            } else {
+                console.log(`Error ${resp.status}`);
+                return;
             }
 
             if(resp.status === 400) {
@@ -75,14 +81,13 @@ program
         }
 
         console.log('Decoding...');
-        contributions = conversion.decode(resp.contributions);
-        //contributions = conversion.decode('{"contributions": [ '+resp.contributions+'}');
-
+        const decodeContributions = await conversion.decodeParallel(resp.contributions);
+        
         rand = contribute.generateRandom();
         rand = Fr.create(rand);
 
         console.log('Update Power of Tau...');
-        var newContributions = contribute.contribute(contributions, rand);
+        var newContributions = contribute.contribute(decodeContributions, rand);
 
         console.log('Update Witnesses...');
         newContributions = contribute.updateWitness(newContributions, rand);
@@ -95,6 +100,7 @@ program
         const jsonDump = JSON.stringify(newContributions, null, '\t');
         fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {});
 
+        console.log('Send contributions');
         const receipt = await sequencer.contribute(sessionID, newContributions);
         console.log(receipt);
     });
