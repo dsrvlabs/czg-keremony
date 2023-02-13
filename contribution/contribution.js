@@ -1,15 +1,16 @@
 const bls = require('@noble/curves/bls12-381');
 const crypto = require('crypto');
 const os = require('os');
+const Fr = bls.bls12_381.CURVE.Fr;
 
 function generateRandom(){
     const [seconds, nanoseconds] = process.hrtime();
     const seed = os.hostname() + os.freemem() + seconds + nanoseconds;
 
-    const hash = crypto.createHash('keccak256');
-    hash.update(seed);
-    const seedHash = hash.digest();
-    const seedInt = seedHash.readInt32LE();
+    const hash = crypto.createHash('sha256')
+        .update(seed)
+        .digest();
+    const seedInt = hash.readInt32LE();
 
     randomBytes = crypto.randomBytes(32);
     const randomInt = (parseInt(randomBytes.toString('hex'), 16) + seedInt);
@@ -27,7 +28,6 @@ function contribute(contributions, rand) {
 
     const G1 = bls.bls12_381.CURVE.G1;
     const G2 = bls.bls12_381.CURVE.G2;
-    const Fr = bls.bls12_381.CURVE.Fr;
 
     const util = bls.bls12_381.utils;
 
@@ -53,8 +53,6 @@ function contribute(contributions, rand) {
 
                 contributions[i].powersOfTau.G2Powers[j] = g2NewAffine;
             }
-
-            xi = (xi * rand) % Fr.ORDER;
         }
     };
 
