@@ -5,7 +5,8 @@ const fs = require('fs');
 const contribute = require('./contribution/contribution.js');
 const conversion = require('./contribution/coversion.js');
 const seq = require('./sequencerclient/sequencerClient.js');
-
+const bls = require('@noble/curves/bls12-381');
+const Fr = bls.bls12_381.CURVE.Fr;
 
 // const url = 'https://seq.ceremony.ethereum.org';
 // const url = 'https://kzg-ceremony-sequencer-dev.fly.dev';
@@ -70,17 +71,15 @@ program
                 console.log(`Error ${resp.status}`);
                 return;
             }
-
             break;
         }
 
         console.log('Decoding...');
         contributions = conversion.decode(resp.contributions);
+        //contributions = conversion.decode('{"contributions": [ '+resp.contributions+'}');
 
-        var rand = [];
-        for (var i =0; i < contributions.length; i++){
-            rand[i] = contribute.generateRandom();
-        }
+        rand = contribute.generateRandom();
+        rand = Fr.create(rand);
 
         console.log('Update Power of Tau...');
         var newContributions = contribute.contribute(contributions, rand);
@@ -88,7 +87,7 @@ program
         console.log('Update Witnesses...');
         newContributions = contribute.updateWitness(newContributions, rand);
 
-        rand.length = 0;
+        rand = null;
 
         console.log('Encoding...');
         newContributions = conversion.encode(newContributions);

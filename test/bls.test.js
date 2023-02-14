@@ -3,6 +3,7 @@ const assert = require("assert");
 const bls = require('@noble/curves/bls12-381');
 const contribute = require('../contribution/contribution.js');
 
+const Fr = bls.bls12_381.CURVE.Fr;
 const util = bls.bls12_381.utils;
 const G1 = bls.bls12_381.CURVE.G1;
 const G2 = bls.bls12_381.CURVE.G2;
@@ -161,6 +162,8 @@ describe('power-of_tau', function() {
 describe('Random', function() {
     it('Generate Random', function(){
         var random = contribute.generateRandom();
-        console.log(random);
+        console.log("rand: "+random);
+        random  = Fr.create(random);
+        console.log("Fr.create(rand): "+random);
     });
 });
