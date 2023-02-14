@@ -2,12 +2,11 @@ const fs = require('fs');
 const assert = require('assert');
 const seq = require('../sequencerclient/sequencerClient.js');
 
-const data = fs.readFileSync('./test/new_contribute.json');
-const newContributions = JSON.parse(data);
 
 describe('sequencer', function() {
     this.timeout(1000000);
 
+    // const url = 'https://seq.ceremony.ethereum.org';
     const url = 'https://kzg-ceremony-sequencer-dev.fly.dev';
     const sequencer = new seq.Sequencer(url);
 
@@ -34,11 +33,17 @@ describe('sequencer', function() {
 
     it('New Contributions', async function() {
         const sessionID = '';
-        console.log(newContributions);
+        // console.log(newContributions);
 
-        const receipt = await sequencer.contribute(sessionID, newContributions);
+        // const receipt = await sequencer.contribute(sessionID, newContributions);
+        // console.log(receipt);
+    });
 
-        console.log(receipt);
+    it('status', async function() {
+        const resp = await sequencer.getStatus();
+
+        assert.equal(resp.status, 200);
+        assert.notEqual(resp.lobby_size, null);
     });
 
 });
