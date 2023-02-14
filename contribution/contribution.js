@@ -15,11 +15,7 @@ function generateRandom(){
     randomBytes = crypto.randomBytes(32);
     const randomInt = (parseInt(randomBytes.toString('hex'), 16) + seedInt);
     const randomBigInt = BigInt(randomInt);
-<<<<<<< HEAD
     return randomBigInt;
-=======
-    return randomBigInt % Fr.ORDER;
->>>>>>> origin/random
 }
 
 // TODO: Confirm by initialContribution.json
@@ -38,11 +34,7 @@ function contribute(contributions, rand) {
     for(var i = 0; i < contributions.length; i++) {
         const g1Powers = contributions[i].powersOfTau.G1Powers;
         const g2Powers = contributions[i].powersOfTau.G2Powers;
-<<<<<<< HEAD
         var xi = BigInt(1);
-=======
-
->>>>>>> origin/random
         for(var j = 0; j < contributions[i].numG1Powers; j++) {
             const g1Affine = g1Powers[j];
             const g1PrjPoint = G1Point.fromAffine(g1Affine);
@@ -61,10 +53,7 @@ function contribute(contributions, rand) {
 
                 contributions[i].powersOfTau.G2Powers[j] = g2NewAffine;
             }
-<<<<<<< HEAD
             xi = (xi * rand) % Fr.ORDER;
-=======
->>>>>>> origin/random
         }
     };
 
