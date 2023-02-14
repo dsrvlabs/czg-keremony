@@ -39,7 +39,7 @@ function contribute(contributions, rand) {
             const g1Affine = g1Powers[j];
             const g1PrjPoint = G1Point.fromAffine(g1Affine);
 
-            const g1NewPrjPoint = g1PrjPoint.multiply(rand[i]);
+            const g1NewPrjPoint = g1PrjPoint.multiply(xi);
             const g1NewAffine = g1NewPrjPoint.toAffine();
 
             contributions[i].powersOfTau.G1Powers[j] = g1NewAffine;
@@ -48,7 +48,7 @@ function contribute(contributions, rand) {
                 const g2Affine = g2Powers[j];
                 const g2PrjPoint = G2Point.fromAffine(g2Affine);
 
-                const g2NewPrjPoint = g2PrjPoint.multiply(rand[i]);
+                const g2NewPrjPoint = g2PrjPoint.multiply(xi);
                 const g2NewAffine = g2NewPrjPoint.toAffine();
 
                 contributions[i].powersOfTau.G2Powers[j] = g2NewAffine;
@@ -77,7 +77,7 @@ function updateWitness(contributions, rand) {
         console.log(potPubkeyAffine);
 
         const potPubkeyPrj = G2Point.fromAffine(potPubkeyAffine);
-        const newPubkeyPrj = potPubkeyPrj.multiply(rand[i])
+        const newPubkeyPrj = potPubkeyPrj.multiply(rand)
 
         const newPotPubkey = util.bytesToHex(G2.toBytes(G2Point, newPubkeyPrj, true));
         console.log('New PotPubkey', newPotPubkey);
