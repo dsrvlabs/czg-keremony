@@ -1,4 +1,4 @@
-# Czg-Keramony
+# CZG-Keremony
 
 Before start participating the ceremony, you should retrieve **session ID** from Ethereum or Github.
 
@@ -16,6 +16,6 @@ Copy **session ID** and try below.
 You can also use docker.
 
 ```
-~$ docker run rootwarp/czg-keramony:latest index.js auth
-~$ docker run rootwarp/czg-keramony:latest index.js <session id>
+~$ docker run rootwarp/czg-keremony:latest index.js auth
+~$ docker run rootwarp/czg-keremony:latest index.js <session id>
 ```
