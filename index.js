@@ -73,8 +73,11 @@ program
         console.log('Decoding...');
         const decodeContributions = await conversion.decodeParallel(resp.contributions);
         
-        rand = contribute.generateRandom();
-        rand = Fr.create(rand);
+        var rand = [];
+        for(var i =0; i < resp.contributions.length; i++){
+        rand[i] = contribute.generateRandom();
+        rand[i] = Fr.create(rand[i]);
+        }
 
         console.log('Update Power of Tau...');
         var newContributions = contribute.contribute(decodeContributions, rand);

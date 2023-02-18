@@ -53,7 +53,7 @@ function contribute(contributions, rand) {
 
                 contributions[i].powersOfTau.G2Powers[j] = g2NewAffine;
             }
-            xi = (xi * rand) % Fr.ORDER;
+            xi = (xi * rand[i]) % Fr.ORDER;
         }
     };
 
@@ -77,7 +77,7 @@ function updateWitness(contributions, rand) {
         console.log(potPubkeyAffine);
 
         const potPubkeyPrj = G2Point.fromAffine(potPubkeyAffine);
-        const newPubkeyPrj = potPubkeyPrj.multiply(rand)
+        const newPubkeyPrj = potPubkeyPrj.multiply(rand[i])
 
         const newPotPubkey = util.bytesToHex(G2.toBytes(G2Point, newPubkeyPrj, true));
         console.log('New PotPubkey', newPotPubkey);
