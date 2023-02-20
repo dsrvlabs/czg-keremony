@@ -1,3 +1,4 @@
+const { Worker } = require('worker_threads');
 const bls = require('@noble/curves/bls12-381');
 const crypto = require('crypto');
 const os = require('os');
@@ -61,7 +62,6 @@ function contribute(contributions, rand) {
 }
 
 function updateWitness(contributions, rand) {
-
     for(var i = 0; i < contributions.length; i++) {
         const potPubkey = contributions[i].potPubkey;
         const hexStr = potPubkey.substring(2);
@@ -88,8 +88,30 @@ function updateWitness(contributions, rand) {
     return contributions;
 }
 
+async function contributeParallel(contributions, rands) {
+    const workers = [];
+    contributions.forEach((c, i) => {
+        const worker = new Worker('./contribution/contribute_worker.js', { workerData: {contribution: c, rand: rands[i] } });
+        workers.push(worker);
+    });
+
+    const newContributions = [];
+    await Promise.all(workers.map((worker) => {
+        return new Promise((resolve) => {
+            worker.on('message', (message) => {
+                console.log('receive new contribution');
+                newContributions.push(message);
+                resolve();
+            });
+        });
+    }));
+
+    return newContributions;
+}
+
 module.exports = {
     contribute: contribute,
+    contributeParallel: contributeParallel,
     updateWitness: updateWitness,
     generateRandom: generateRandom,
 };
