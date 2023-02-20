@@ -39,7 +39,8 @@ program
 
 program
     .command('ceremony <sessionID>')
-    .action(async sessionID => {
+    .option('-e, --entropy <entropy word>')
+    .action(async (sessionID, options) => {
         const RETRY_SEC = 30;
 
         console.log('Starting ceremony...');
@@ -58,7 +59,7 @@ program
                 break;
             }
 
-            if(resp.status === 400) {
+            if(resp.status == 400) {
                 console.log(resp.msg);
                 console.log(`Retry after ${RETRY_SEC} seconds`);
                 await sleep(RETRY_SEC);
@@ -74,8 +75,12 @@ program
         const decodeContributions = await conversion.decodeParallel(resp.contributions);
         
         var rands = [];
+        var entropy = "";
+        if(options.entropy){
+            entropy = options.entropy;
+        }
         for(var i = 0; i < resp.contributions.length; i++) {
-            rands[i] = contribute.generateRandom();
+            rands[i] = contribute.generateRandom(entropy);
             rands[i] = Fr.create(rands[i]);
         }
 
