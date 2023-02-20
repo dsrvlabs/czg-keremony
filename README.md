@@ -13,6 +13,13 @@ Copy **session ID** and try below.
 ~$ ./index.js ceremony <session id>
 ```
 
+If you want to add entropy for Random, try below.
+
+```
+~$ ./index.js ceremony <session id> -e <entropy word>
+~$ ./index.js ceremony <session id> --entropy <entropy word>
+```
+
 You can also use docker.
 
 ```
