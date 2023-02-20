@@ -73,19 +73,19 @@ program
         console.log('Decoding...');
         const decodeContributions = await conversion.decodeParallel(resp.contributions);
         
-        var rand = [];
-        for(var i =0; i < resp.contributions.length; i++){
-        rand[i] = contribute.generateRandom();
-        rand[i] = Fr.create(rand[i]);
+        var rands = [];
+        for(var i = 0; i < resp.contributions.length; i++) {
+            rands[i] = contribute.generateRandom();
+            rands[i] = Fr.create(rands[i]);
         }
 
         console.log('Update Power of Tau...');
-        var newContributions = contribute.contribute(decodeContributions, rand);
+        var newContributions = await contribute.contributeParallel(decodeContributions, rands);
 
         console.log('Update Witnesses...');
-        newContributions = contribute.updateWitness(newContributions, rand);
+        newContributions = contribute.updateWitness(newContributions, rands);
 
-        rand = null;
+        rands = null;
 
         console.log('Encoding...');
         newContributions = conversion.encode(newContributions);
