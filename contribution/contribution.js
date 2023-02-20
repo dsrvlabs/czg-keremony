@@ -4,9 +4,9 @@ const crypto = require('crypto');
 const os = require('os');
 const Fr = bls.bls12_381.CURVE.Fr;
 
-function generateRandom(){
+function generateRandom(entropy){
     const [seconds, nanoseconds] = process.hrtime();
-    const seed = os.hostname() + os.freemem() + seconds + nanoseconds;
+    const seed = os.hostname() + os.freemem() + seconds + nanoseconds + entropy;
 
     const hash = crypto.createHash('sha256')
         .update(seed)
