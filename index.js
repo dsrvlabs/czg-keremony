@@ -59,7 +59,7 @@ program
                 break;
             }
 
-            if(resp.status == 400) {
+            if(resp.status === 400) {
                 console.log(resp.msg);
                 console.log(`Retry after ${RETRY_SEC} seconds`);
                 await sleep(RETRY_SEC);
