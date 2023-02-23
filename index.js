@@ -102,7 +102,12 @@ program
 
         console.log('Send contributions');
         const receipt = await sequencer.contribute(sessionID, newContributions);
-        console.log(receipt);
+        const receiptJson = JSON.stringify(receipt, null, '\t');
+
+        fs.writeFile('receipt.json', receiptJson, (err) => {
+            if (err) throw err;
+            console.log(receipt);
+        });
     });
 
 program
@@ -125,9 +130,12 @@ program
 
         const prevContributions = await tryAndWait(sequencer, sessionID);
         const receipt = await runCeremony(sequencer, sessionID, entropy, prevContributions);
+        const receiptJson = JSON.stringify(receipt, null, '\t');
 
-        // TODO: Store this receipt?
-        console.log(receipt);
+        fs.writeFile('receipt.json', receiptJson, (err) => {
+            if (err) throw err;
+            console.log(receipt);
+        });
     });
 
 async function generateEntropy() {
