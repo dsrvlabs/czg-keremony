@@ -104,7 +104,7 @@ program
         const receipt = await sequencer.contribute(sessionID, newContributions);
         const receiptJson = JSON.stringify(receipt, null, '\t');
 
-        fs.writeFile('receipt.json', receiptJson, (err) => {
+        fs.writeFileSync('receipt.json', receiptJson, (err) => {
             if (err) throw err;
             console.log(receipt);
         });
@@ -132,7 +132,7 @@ program
         const receipt = await runCeremony(sequencer, sessionID, entropy, prevContributions);
         const receiptJson = JSON.stringify(receipt, null, '\t');
 
-        fs.writeFile('receipt.json', receiptJson, (err) => {
+        fs.writeFileSync('receipt.json', receiptJson, (err) => {
             if (err) throw err;
             console.log(receipt);
         });
