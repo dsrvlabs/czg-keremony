@@ -26,3 +26,8 @@ You can also use docker.
 ~$ docker run rootwarp/czg-keremony:latest index.js auth
 ~$ docker run rootwarp/czg-keremony:latest index.js <session id>
 ```
+
+To use more interactive way, try
+```
+~$ ./index.js start
+```
