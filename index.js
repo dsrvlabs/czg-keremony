@@ -3,6 +3,8 @@
 const program = require('commander');
 const fs = require('fs');
 const inquirer = require('inquirer');
+const bip39 = require('bip39');
+const crypto = require('crypto');
 
 const contribute = require('./contribution/contribution.js');
 const conversion = require('./contribution/coversion.js');
@@ -113,7 +115,10 @@ program
 program
     .command('start')
     .action(async () => {
-        const entropy = generateEntropy();
+        const entropy = await generateEntropy();
+        console.log('');
+        console.log('');
+
 
         const sequencer = new seq.Sequencer(url);
         const { provider, authUrl } = await authentication(sequencer);
@@ -139,12 +144,41 @@ program
     });
 
 async function generateEntropy() {
-    // TODO: Entropy
-    // Some ideas.
-    // Read standard mnemonic words and make users to choose some words.
-    // Words that will provided on questions should be choosen randomly.
-    // This function will gather answers and create entropy.
-    return 'hello-world';
+    console.log('Generate Entropy');
+    
+    const questions = [
+        {
+            type: 'list',
+            name: 'entropyGenerater',
+            message: 'Which method do you prefer for generating entropy?',
+            choices: ['own word', 'mnmonic'],
+        },
+    ];
+
+    const { entropyGenerater } = await inquirer.prompt(questions);
+
+    if(entropyGenerater === 'own word'){
+        const questions = [ 
+            {
+                type: 'input',
+                name: 'own_word',
+                message: 'Please enter words or sentence to generate entropy:'
+            }
+        ];
+
+        const { own_word } = await inquirer.prompt(questions);
+        const entropy = crypto.createHash('sha256').update(own_word).digest('hex');
+        console.log("The word you entered: " + own_word);
+        return entropy ;
+    } else if (entropyGenerater === 'mnmonic'){
+        const mnemonic = bip39.generateMnemonic(); 
+        const entropy = bip39.mnemonicToEntropy(mnemonic);
+        console.log("Your mnemonic: " + mnemonic);
+        return entropy;
+    }else{
+        return null;
+    }
+
 }
 
 async function authentication(sequencer) {
