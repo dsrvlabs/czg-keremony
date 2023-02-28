@@ -3,7 +3,7 @@
 Proto-danksharding requires a new cryptographic scheme: KZG Commitments.
 This client was created to participate in KZG Ceremony for Proto-danksharding (aka [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)) in Ethereum.
 
-For more information about KGZ Ceremony, please read [Announcing the KZG Ceremony](https://blog.ethereum.org/2023/01/16/announcing-kzg-ceremony) at Ethereum foundation blog.
+For more information about KZG Ceremony, please read [Announcing the KZG Ceremony](https://blog.ethereum.org/2023/01/16/announcing-kzg-ceremony) at Ethereum foundation blog.
 
 ## Which BLS library did the CZG-Keremony client use?
 
@@ -12,7 +12,7 @@ The BLS library used in the CZG-Keremony client is the [noble-curves](https://gi
 
 ## Why do we make a client with JavaScript?
 
-JavaScript is a versatile language that can run on a wide range of platforms and devices. While there are clients available for other programming languages such as Go, Rust, Java, and C++, there are currently no clients written in JavaScript. As a result, a client has been developed in JavaScript to add to the diversity of clients available. Having clients written in multiple programming languages can help decentralize the ceremony and make it more robust and secure.
+JavaScript is a versatile language that can run on a wide range of platforms and devices. While there are clients available for other programming languages such as Go, Rust, Java, and C++, there are currently no clients written in pure JavaScript. As a result, a client has been developed in JavaScript for the diversity of the client availability. Having clients written in multiple programming languages can help decentralize the ceremony and make it more robust and secure.
 
 ## Dependencies
 
@@ -140,7 +140,7 @@ If the contribution is successful, you can obtain two files.
 ## Contact us
 Please, contact [us](mailto:validator@dsrvlabs.com) if you have any improvements and need any further information about **CZG-Keremony**.
 
-**DSRV** is a blockchain infrastructure company that provides powerful and easy-to-use solutions to enable developers and enterprises to become architects of the future. Visit [DSRV](https://www.dsrvlabs.com/), if you are interested in various products we build for the Web 3.0 developers.
+**DSRV** is a blockchain infrastructure company that provides powerful and easy-to-use solutions to enable developers and enterprises to become architects of the future. Visit [DSRV](https://dsrvlabs.com/), if you are interested in various products we build for the Web 3.0 developers.
 
 [<img alt="Homepage" src="https://user-images.githubusercontent.com/63234878/210315637-2d30efdd-5b9e-463e-8731-571916a6e1e3.svg" width="50" height="50" />](https://www.dsrvlabs.com/)
 [<img alt="Medium" src="https://user-images.githubusercontent.com/6308023/176984456-f82c5c67-ebf3-455c-8494-c64ebfd66c58.svg" width="50" height="50" />](https://medium.com/dsrv)
