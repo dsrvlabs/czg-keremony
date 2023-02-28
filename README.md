@@ -51,18 +51,42 @@ Copy **session ID** and try below.
 If you want to add entropy for Random, try below.
 
 ```
-~$ ./index.js ceremony <session id> -e <entropy word>
-~$ ./index.js ceremony <session id> --entropy <entropy word>
+~$ ./index.js ceremony <session ID> -e <entropy word>
+~$ ./index.js ceremony <session ID> --entropy <entropy word>
 ```
 
 You can also use docker.
 
 ```
 ~$ docker run rootwarp/czg-keremony:latest index.js auth
-~$ docker run rootwarp/czg-keremony:latest index.js <session id>
+~$ docker run rootwarp/czg-keremony:latest index.js <session ID>
 ```
 
+If it's your turn, start contributing and the following log will be displayed. But if it's not your turn to contribute yet, try again every 30 seconds.
 
+```
+~$ ./index.js ceremony <session ID>
+Starting ceremony...
+Decoding...
+Update Power of Tau...
+contributeWorker 47237169053441301841166980151151312999300830053273079238139807446210044755967n
+contributeWorker 7844484162941598042235848719562081256356685621957398457337283015295390187518n
+contributeWorker 23660003815592608114191690761158064328963219831383084656106428927558564184063n
+contributeWorker 10280317895840465168312050948394704333385671067890736951545830530918962429952n
+receive new contribution
+receive new contribution
+receive new contribution
+receive new contribution
+Update Witnesses...
+....
+...
+Encoding...
+Send contributions
+```
+
+If the contribution is successful, you can obtain two files.
+- `<session ID>.json`: Contribution actually submitted to the sequencer.
+- `receipt.json`: Receipt received from sequencer for your contribution.
 
 ### 2. Interactive prompt
 
@@ -85,15 +109,33 @@ Authentication
 
 ### Step 3. Input your session ID
 
-If you choose for the authentication method, you will receive a URL. Once you complete the authentication process, you should obtain a session ID and input it.
+If you choose the authentication method, you will receive a URL. Once you complete the authentication process, you should obtain a session ID and input it.
+If you have inputted a normal session ID, start contributing.
 
 ```
 ? Input your session ID:  <session ID>
 Try and Wait...
 Run Ceremony...
+Decoding contributions....
+Update Power of Tau...
+contributeWorker 41295310105836888845936879595368292374944132911695474590752610146651163590656n
+contributeWorker 51703212666669504362695969409454291417129873400735971403511422243297134903295n
+contributeWorker 35887398264232380188929432866932236319002976938959179522563279404663991959552n
+contributeWorker 809698965169614451927464888076693923619435521104147607672641068204954746879n
+receive new contribution
+receive new contribution
+receive new contribution
+receive new contribution
+Update Witnesses...
+...
+...
+Encoding...
+Send contributions
 ```
 
-If you enter the session ID, you are ready for the contribution.
+If the contribution is successful, you can obtain two files.
+- `<session ID>.json`: Contribution actually submitted to the sequencer.
+- `receipt.json`: Receipt received from sequencer for your contribution.
 
 ## Contact us
 Please, contact [us](mailto:validator@dsrvlabs.com) if you have any improvements and need any further information about **CZG-Keremony**.
