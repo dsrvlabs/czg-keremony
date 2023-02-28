@@ -3,6 +3,8 @@
 Proto-danksharding requires a new cryptographic scheme: KZG Commitments.
 This client was created to participate in KZG Ceremony for Proto-danksharding (aka [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)) in Ethereum.
 
+For more information about KGZ Ceremony, please read [Announcing the KZG Ceremony](https://blog.ethereum.org/2023/01/16/announcing-kzg-ceremony) at Ethereum foundation blog.
+
 ## Which BLS library did the CZG-Keremony client use?
 
 The BLS library used in the CZG-Keremony client is the [noble-curves](https://github.com/paulmillr/noble-curves) library.
