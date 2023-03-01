@@ -1,7 +1,7 @@
 const fs = require('fs');
 const assert = require("assert");
 
-const conversion = require('../contribution/coversion.js');
+const conversion = require('../contribution/conversion.js');
 const contribute = require('../contribution/contribution.js');
 const bls = require('@noble/curves/bls12-381');
 

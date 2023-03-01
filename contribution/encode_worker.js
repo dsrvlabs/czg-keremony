@@ -15,9 +15,6 @@ function encodeWorker() {
 
     for(var i = 0; i < encodeContribution.numG1Powers; i++){
         var affinePoint = encodeContribution.powersOfTau.G1Powers[i];
-
-        console.log('afinepoint', affinePoint);
-
         var prj = G1Point.fromAffine(affinePoint);
         var revert = G1.toBytes(G1Point, prj, true);
         encodeContribution.powersOfTau.G1Powers[i] = "0x"+util.bytesToHex(revert);

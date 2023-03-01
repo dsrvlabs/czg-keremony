@@ -4,7 +4,7 @@ const assert = require("assert");
 const _ = require('lodash');
 const bls = require('@noble/curves/bls12-381');
 
-const { decode, encode, decodeParallel } = require('../contribution/coversion.js');
+const { decode, encode, decodeParallel } = require('../contribution/conversion.js');
 
 
 describe("conversion", function(){

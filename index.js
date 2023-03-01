@@ -5,8 +5,9 @@ const fs = require('fs');
 const inquirer = require('inquirer');
 
 const contribute = require('./contribution/contribution.js');
-const conversion = require('./contribution/coversion.js');
+const conversion = require('./contribution/conversion.js');
 const seq = require('./sequencerclient/sequencerClient.js');
+const logger = require('./logger');
 const bls = require('@noble/curves/bls12-381');
 const Fr = bls.bls12_381.CURVE.Fr;
 
@@ -31,7 +32,7 @@ program
 
         if(status !== 200) {
             // TODO: Handle error
-            console.log("Somthings wrong...bye");
+            logger.error("Somthings wrong...bye");
             return;
         }
         
@@ -45,7 +46,7 @@ program
     .action(async (sessionID, options) => {
         const RETRY_SEC = 30;
 
-        console.log('Starting ceremony...');
+        logger.info('Starting ceremony...');
 
         const sequencer = new seq.Sequencer(url);
 
@@ -54,7 +55,7 @@ program
             resp = await sequencer.tryContribute(sessionID);
             if(resp.status == 200) {
                 if(resp.error != null) {
-                    console.log(`${resp.error} - retry after ${RETRY_SEC} seconds`);
+                    logger.info(`${resp.error} - retry after ${RETRY_SEC} seconds`);
                     await sleep(RETRY_SEC);
                     continue
                 }
@@ -62,18 +63,18 @@ program
             }
 
             if(resp.status === 400) {
-                console.log(resp.msg);
-                console.log(`Retry after ${RETRY_SEC} seconds`);
+                logger.error(resp.msg);
+                logger.info(`Retry after ${RETRY_SEC} seconds`);
                 await sleep(RETRY_SEC);
                 continue;
             } else {
-                console.log(`Error ${resp.status}`);
+                logger.error(`Error ${resp.status}`);
                 return;
             }
             break;
         }
 
-        console.log('Decoding...');
+        logger.info('Decoding...');
         const decodeContributions = await conversion.decodeParallel(resp.contributions);
         
         var rands = [];
@@ -86,27 +87,27 @@ program
             rands[i] = Fr.create(rands[i]);
         }
 
-        console.log('Update Power of Tau...');
+        logger.info('Update Power of Tau...');
         var newContributions = await contribute.contributeParallel(decodeContributions, rands);
 
-        console.log('Update Witnesses...');
+        logger.info('Update Witnesses...');
         newContributions = contribute.updateWitness(newContributions, rands);
 
         rands = null;
 
-        console.log('Encoding...');
+        logger.info('Encoding...');
         newContributions = conversion.encode(newContributions);
 
         const jsonDump = JSON.stringify(newContributions, null, '\t');
         fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {});
 
-        console.log('Send contributions');
+        logger.info('Send contributions');
         const receipt = await sequencer.contribute(sessionID, newContributions);
         const receiptJson = JSON.stringify(receipt, null, '\t');
 
+        logger.info(receipt);
         fs.writeFileSync('receipt.json', receiptJson, (err) => {
             if (err) throw err;
-            console.log(receipt);
         });
     });
 
@@ -132,9 +133,9 @@ program
         const receipt = await runCeremony(sequencer, sessionID, entropy, prevContributions);
         const receiptJson = JSON.stringify(receipt, null, '\t');
 
+        logger.info(receipt);
         fs.writeFileSync('receipt.json', receiptJson, (err) => {
             if (err) throw err;
-            console.log(receipt);
         });
     });
 
@@ -180,7 +181,7 @@ async function authentication(sequencer) {
 }
 
 async function tryAndWait(sequencer, sessionID) {
-    console.log('Try and Wait...');
+    logger.info('Try and Wait...');
 
     const RETRY_SEC = 30;
 
@@ -190,7 +191,7 @@ async function tryAndWait(sequencer, sessionID) {
         resp = await sequencer.tryContribute(sessionID);
         if(resp.status == 200) {
             if(resp.error != null) {
-                console.log(`${resp.error} - retry after ${RETRY_SEC} seconds`);
+                logger.info(`${resp.error} - retry after ${RETRY_SEC} seconds`);
                 await sleep(RETRY_SEC);
                 continue
             }
@@ -199,12 +200,12 @@ async function tryAndWait(sequencer, sessionID) {
         }
 
         if(resp.status === 400) {
-            console.log(resp.msg);
-            console.log(`Retry after ${RETRY_SEC} seconds`);
+            logger.error(resp.msg);
+            logger.info(`Retry after ${RETRY_SEC} seconds`);
             await sleep(RETRY_SEC);
             continue;
         } else {
-            console.log(`Error ${resp.status}`);
+            logger.error(`Error ${resp.status}`);
             return;
         }
         break;
@@ -212,9 +213,9 @@ async function tryAndWait(sequencer, sessionID) {
 }
 
 async function runCeremony(sequencer, sessionID, entropy, prevContributions) {
-    console.log('Run Ceremony...');
+    logger.info('Run Ceremony...');
 
-    console.log('Decoding contributions....');
+    logger.info('Decoding contributions....');
     const decodeContributions = await conversion.decodeParallel(prevContributions);
     
     var rands = [];
@@ -223,18 +224,18 @@ async function runCeremony(sequencer, sessionID, entropy, prevContributions) {
         rands[i] = Fr.create(rands[i]);
     }
 
-    console.log('Update Power of Tau...');
+    logger.info('Update Power of Tau...');
     var newContributions = await contribute.contributeParallel(decodeContributions, rands);
 
-    console.log('Update Witnesses...');
+    logger.info('Update Witnesses...');
     newContributions = contribute.updateWitness(newContributions, rands);
 
     rands = null;
 
-    console.log('Encoding...');
+    logger.info('Encoding...');
     newContributions = conversion.encode(newContributions);
 
-    console.log('Send contributions');
+    logger.info('Send contributions');
     const receipt = await sequencer.contribute(sessionID, newContributions);
     return receipt;
 }

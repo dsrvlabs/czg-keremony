@@ -1,11 +1,9 @@
 const { workerData, parentPort } = require("worker_threads");
 const _ = require('lodash');
 const bls = require('@noble/curves/bls12-381');
+const logger = require('../logger');
 
 
-const util = bls.bls12_381.utils;
-const G1 = bls.bls12_381.CURVE.G1;
-const G2 = bls.bls12_381.CURVE.G2;
 const G1Point = bls.bls12_381.G1.ProjectivePoint;
 const G2Point = bls.bls12_381.G2.ProjectivePoint;
 const Fr = bls.bls12_381.CURVE.Fr;
@@ -15,7 +13,7 @@ function contributeWorker() {
     var contribution = _.cloneDeep(workerData.contribution);
     const rand = workerData.rand;
 
-    console.log('contributeWorker', rand);
+    logger.info('Run contribute worker')
 
     const g1Powers = contribution.powersOfTau.G1Powers;
     const g2Powers = contribution.powersOfTau.G2Powers;
