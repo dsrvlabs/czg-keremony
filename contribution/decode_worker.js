@@ -6,9 +6,6 @@ const bls = require('@noble/curves/bls12-381');
 const util = bls.bls12_381.utils;
 const G1 = bls.bls12_381.CURVE.G1;
 const G2 = bls.bls12_381.CURVE.G2;
-const G1Point = bls.bls12_381.G1.ProjectivePoint;
-const G2Point = bls.bls12_381.G2.ProjectivePoint;
-
 
 function decodeWorker() {
     var decodeContribution = _.cloneDeep(workerData.contribution);

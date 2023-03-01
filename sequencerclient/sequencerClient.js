@@ -1,6 +1,5 @@
-const fs = require('fs');
 const axios = require('axios');
-
+const logger = require('../logger');
 
 class Sequencer {
     constructor(url) {
@@ -85,7 +84,7 @@ class Sequencer {
             }
             return resp.data;
         } catch (err) {
-            console.log('contribute err', err);
+            logger.error('contribute err', err);
             return {
                 status: err.resposne.status,
                 msg: err.response.data.error,

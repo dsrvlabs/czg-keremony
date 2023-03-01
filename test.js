@@ -1,6 +1,6 @@
 const fs = require('fs');
 const contribute = require('./contribution/contribution.js');
-const conversion = require('./contribution/coversion.js');
+const conversion = require('./contribution/conversion.js');
 
 
 // const data = fs.readFileSync('./test/try_contribute_partial.json');
