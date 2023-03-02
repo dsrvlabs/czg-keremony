@@ -3,28 +3,25 @@ const winston = require('winston');
 const { combine, timestamp, printf, colorize } = winston.format;
 
 const logFormat = printf(({ level, message, timestamp }) => {
-    return `${timestamp} ${level.toUpperCase()} ${message}`;
+    return `${timestamp} [ ${level} ] ${message}`;
 });
 
 const colors = {
-    ERROR: 'red',
-    WARN: 'yellow',
-    INFO: 'green'
+    error: 'red',
+    warn: 'yellow',
+    info: 'green'
 }
 
 winston.addColors(colors);
 
 const logger = winston.createLogger({
-
     format: combine(
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         colorize({ all: true }),
-        logFormat,
+        logFormat
     ),
     transports: [
-        new winston.transports.Console({
-            handleExceptions: true,
-        })
+        new winston.transports.Console()
     ]
 });
 
