@@ -11,111 +11,32 @@ const logger = require('./logger');
 const bls = require('@noble/curves/bls12-381');
 const Fr = bls.bls12_381.CURVE.Fr;
 
-// const url = 'https://seq.ceremony.ethereum.org';
-// const url = 'https://kzg-ceremony-sequencer-dev.fly.dev';
-const url = 'http://34.64.236.141:3000';
-
-
 function sleep(sec) {
     return new Promise(resolve => setTimeout(resolve, sec * 1000));
 }
 
+const artStr = `
+ ██████╗ ██████╗ ███████╗     ██╗  ██╗███████╗██████╗ ███████╗███╗   ███╗ ██████╗ ███╗   ██╗██╗   ██╗
+██╔════╝██╔════╝ ╚══███╔╝     ██║ ██╔╝██╔════╝██╔══██╗██╔════╝████╗ ████║██╔═══██╗████╗  ██║╚██╗ ██╔╝
+██║     ██║  ███╗  ███╔╝█████╗█████╔╝ █████╗  ██████╔╝█████╗  ██╔████╔██║██║   ██║██╔██╗ ██║ ╚████╔╝ 
+██║     ██║   ██║ ███╔╝ ╚════╝██╔═██╗ ██╔══╝  ██╔══██╗██╔══╝  ██║╚██╔╝██║██║   ██║██║╚██╗██║  ╚██╔╝  
+╚██████╗╚██████╔╝███████╗     ██║  ██╗███████╗██║  ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║ ╚████║   ██║   
+ ╚═════╝ ╚═════╝ ╚══════╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
+`;
+
+
 program
     .version('0.1.0')
-    .description('A Test CLI')
-
-program
-    .command('auth')
-    .action(async name => {
-        const sequencer = new seq.Sequencer(url);
-        const { status, eth, github } = await sequencer.requestLink();
-
-        if(status !== 200) {
-            // TODO: Handle error
-            logger.error("Somthings wrong...bye");
-            return;
-        }
-        
-        console.log('- Ethereum:', eth);
-        console.log('- Github:', github);
-    });
-
-program
-    .command('ceremony <sessionID>')
-    .option('-e, --entropy <entropy word>')
-    .action(async (sessionID, options) => {
-        const RETRY_SEC = 30;
-
-        logger.info('Starting ceremony...');
-
-        const sequencer = new seq.Sequencer(url);
-
-        var resp;
-        while(true) {
-            resp = await sequencer.tryContribute(sessionID);
-            if(resp.status == 200) {
-                if(resp.error != null) {
-                    logger.info(`${resp.error} - retry after ${RETRY_SEC} seconds`);
-                    await sleep(RETRY_SEC);
-                    continue
-                }
-                break;
-            }
-
-            if(resp.status === 400) {
-                logger.error(resp.msg);
-                logger.info(`Retry after ${RETRY_SEC} seconds`);
-                await sleep(RETRY_SEC);
-                continue;
-            } else {
-                logger.error(`Error ${resp.status}`);
-                return;
-            }
-            break;
-        }
-
-        logger.info('Decoding...');
-        const decodeContributions = await conversion.decodeParallel(resp.contributions);
-        
-        var rands = [];
-        var entropy = "";
-        if(options.entropy){
-            entropy = options.entropy;
-        }
-        for(var i = 0; i < resp.contributions.length; i++) {
-            rands[i] = contribute.generateRandom(entropy);
-            rands[i] = Fr.create(rands[i]);
-        }
-
-        logger.info('Update Power of Tau...');
-        var newContributions = await contribute.contributeParallel(decodeContributions, rands);
-
-        logger.info('Update Witnesses...');
-        newContributions = contribute.updateWitness(newContributions, rands);
-
-        rands = null;
-
-        logger.info('Encoding...');
-        newContributions = conversion.encode(newContributions);
-
-        const jsonDump = JSON.stringify(newContributions, null, '\t');
-        fs.writeFile(`./${sessionID}.json`, jsonDump, (err) => {});
-
-        logger.info('Send contributions');
-        const receipt = await sequencer.contribute(sessionID, newContributions);
-        const receiptJson = JSON.stringify(receipt, null, '\t');
-
-        logger.info(receipt);
-        fs.writeFileSync('receipt.json', receiptJson, (err) => {
-            if (err) throw err;
-        });
-    });
+    .description(artStr)
 
 program
     .command('start')
-    .action(async () => {
-        const entropy = generateEntropy();
+    .description('Start contributing to KZG Ceremony')
+    .option('-s, --sequencer <sequencer URL>', 'URL to be used as a sequencer', 'https://seq.ceremony.ethereum.org')
+    .action(async (options) => {
 
+        const url = options.sequencer; 
+        const entropy = generateEntropy();
         const sequencer = new seq.Sequencer(url);
         const { provider, authUrl } = await authentication(sequencer);
 
@@ -133,10 +54,12 @@ program
         const receipt = await runCeremony(sequencer, sessionID, entropy, prevContributions);
         const receiptJson = JSON.stringify(receipt, null, '\t');
 
-        logger.info(receipt);
         fs.writeFileSync('receipt.json', receiptJson, (err) => {
             if (err) throw err;
-        });
+        }); 
+
+        logger.info(`Successfully contributed!`);
+        logger.info(receipt);
     });
 
 async function generateEntropy() {
@@ -234,6 +157,12 @@ async function runCeremony(sequencer, sessionID, entropy, prevContributions) {
 
     logger.info('Encoding...');
     newContributions = conversion.encode(newContributions);
+    const jsonDump = JSON.stringify(newContributions, null, '\t');
+    try {
+        fs.writeFileSync(`contributions.json`, jsonDump);
+    } catch (error) {
+        logger.error(`An error occurred while writing to the contributions.json: ${error.message}`);
+    }
 
     logger.info('Send contributions');
     const receipt = await sequencer.contribute(sessionID, newContributions);
