@@ -17,8 +17,9 @@ JavaScript is a versatile language that can run on a wide range of platforms and
 
 1. Install `Node.js v18+` and `npm`. 
 2. Run `npm install`.
+3. `Docker` if you will use docker image.
 
-## How to use CZG-Keremony client?
+## How to use CZG-Keremony client by CLI?
 
 This CZG-Keremony client provides an interactive prompt to participate in KZG ceremony.
 
@@ -100,6 +101,12 @@ When it's your turn, run the ceremony
 If the contribution is successful, you can obtain two files.
 - `contributions.json`: Contribution actually submitted to the sequencer.
 - `receipt.json`: Receipt received from sequencer for your contribution.
+
+## How to use CZG-Keremony client by Docker?
+
+```
+docker run -it rootwarp/czg-keremony:v1.0.0
+```
 
 ## Contact us
 Please, contact [us](mailto:validator@dsrvlabs.com) if you have any improvements and need any further information about **CZG-Keremony**.
