@@ -26,7 +26,9 @@ To participate in ceremony, you must have at least one that satisfies the follow
 - Ethereum - An Ethereum address is required to have sent at least 3 transactions before Jan. 13, 2023 (block number 16,394,155)
 - GitHub - A GitHub account that has a commit dated before 1 August 2022 00:00 UTC.
 
-### Step 1. Start interactive prompt
+### Contribution in one machine
+
+#### Step 1. Start interactive prompt
 
 If you want to participate in the actual contribution, please start.
 
@@ -40,7 +42,7 @@ If you want to start with a different sequencer address, use the `-s` or `--sequ
 ~$ ./index.js start --sequencer https://kzg-ceremony-sequencer-dev.fly.dev 
 ```
 
-### Step 2. Select authentication method
+#### Step 2. Select authentication method
 
 Choose the authentication method you want, Ethereum or GitHub.
 
@@ -58,7 +60,7 @@ If you select either `ethereum` or `github`, you will receive a URL.
 https://oidc.signinwithethereum.org/authorize?xxxxxx
 ```
 
-### Step 3. Input your session ID
+#### Step 3. Input your session ID
 
 After accessing the given URL, you need to go through the authentication process and get a session ID, which you then need to input. Once you have inputted your session ID, you can start contributing.
 
@@ -100,6 +102,87 @@ When it's your turn, run the ceremony
 If the contribution is successful, you can obtain two files.
 - `contributions.json`: Contribution actually submitted to the sequencer.
 - `receipt.json`: Receipt received from sequencer for your contribution.
+
+### For Air-Gapped Contribution
+
+There are additional command for air-gapped contribution.
+
+Below steps will be procees with two separated machined
+and also recommended to use network blocked a machine, will calculate the contribution.
+
+#### Step 1: Authenticate and download previous contribution files
+
+First, on the network-connected machine, try below to retrieve previous contributions.
+
+```
+~$ ./index.js try-contribute 
+2023-03-31 14:04:43 [ info ] Start try contribution
+? Which method do you prefer for authentication? github
+https://oidc.signinwithethereum.org/authorize?xxxxxx
+
+? Input your session ID:  <session ID>
+2023-03-31 14:04:56 [ info ] Try and Wait...
+2023-03-31 14:04:59 [ info ] Previous contribution is written on contribution_<session ID>.json
+```
+
+You will get the new json file, which the name forms `contribution_<session ID>.json`.
+
+#### Step 2: Move prev. contribution file to air-gapped machine
+
+Then, copy the contribution file and copy it into air-gapped machine.
+You may use flash memory(USB memory) to copy the contribution file into air-gapped machine.
+I definitely recommend that do not connect air-gapped machine for copying the contribution file.
+
+#### Step 3: Create new contribution
+
+Now, try to calculate new contribution from air-gapped machine.
+
+```
+~$ ./index.js execute-ceremony -f ./contribution_<session ID>.json
+
+2023-03-31 14:14:04 [ info ] Start Execute Ceremony
+2023-03-31 14:14:04 [ info ] Run Ceremony...
+2023-03-31 14:14:04 [ info ] Decoding contributions....
+2023-03-31 14:14:14 [ info ] Update Power of Tau...
+2023-03-31 14:14:14 [ info ] Run contribute worker
+2023-03-31 14:14:14 [ info ] Run contribute worker
+2023-03-31 14:14:14 [ info ] Run contribute worker
+2023-03-31 14:14:14 [ info ] Run contribute worker
+2023-03-31 14:14:35 [ info ] Receive new contribution
+2023-03-31 14:14:48 [ info ] Receive new contribution
+2023-03-31 14:15:17 [ info ] Receive new contribution
+2023-03-31 14:16:14 [ info ] Receive new contribution
+2023-03-31 14:16:14 [ info ] Update Witnesses...
+2023-03-31 14:16:15 [ info ] Encoding...
+2023-03-31 14:16:15 [ info ] Previous contribution is written on new_contribution.json
+```
+
+#### Step 4: Copy the new contribution file
+
+Similary to Step 2, move the result file to internet-connected machine.
+I also recommend that do not connect internet.
+
+#### Step 5: Upload new contribution file
+
+If you copy the new contribution file into internet connected machine,
+the final step is uploading it to the sequencer.
+
+```
+~$ ./index.js contribute -f ./new_contribution.json --session_id <session ID>
+2023-03-31 14:32:27 [ info ] Submit contribution
+2023-03-31 14:32:27 [ info ] Send contributions
+2023-03-31 14:33:29 [ info ] Successfully contributed!
+2023-03-31 14:33:29 [ info ] {
+  receipt: ...
+  signature: ...
+}
+```
+
+If the file is uploaded successfully, you will get `receipt.json` file.
+
+#### Step 6: Destory the machine, which is used at Step 3
+
+Most important step. Destory air-gapped machine!
 
 ## Contact us
 Please, contact [us](mailto:validator@dsrvlabs.com) if you have any improvements and need any further information about **CZG-Keremony**.

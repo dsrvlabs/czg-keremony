@@ -51,7 +51,9 @@ program
         });
 
         const prevContributions = await tryAndWait(sequencer, sessionID);
-        const receipt = await runCeremony(sequencer, sessionID, entropy, prevContributions);
+        const newContributions = await runCeremony(entropy, prevContributions);
+        const receipt = await send_contribute(sequencer, sessionID, newContributions);
+
         const receiptJson = JSON.stringify(receipt, null, '\t');
 
         fs.writeFileSync('receipt.json', receiptJson, (err) => {
@@ -72,8 +74,6 @@ async function generateEntropy() {
 }
 
 async function authentication(sequencer) {
-    console.log('Authentication');
-
     const questions = [
         {
             type: 'list',
@@ -135,7 +135,7 @@ async function tryAndWait(sequencer, sessionID) {
     }
 }
 
-async function runCeremony(sequencer, sessionID, entropy, prevContributions) {
+async function runCeremony(entropy, prevContributions) {
     logger.info('Run Ceremony...');
 
     logger.info('Decoding contributions....');
@@ -164,10 +164,95 @@ async function runCeremony(sequencer, sessionID, entropy, prevContributions) {
         logger.error(`An error occurred while writing to the contributions.json: ${error.message}`);
     }
 
+    return newContributions;
+}
+
+async function send_contribute(sequencer, sessionID, newContributions) {
     logger.info('Send contributions');
     const receipt = await sequencer.contribute(sessionID, newContributions);
     return receipt;
 }
+
+program
+    .command('try-contribute')
+    .description('Try contribution')
+    .option('-s, --sequencer <sequencer URL>', 'URL to be used as a sequencer', 'https://seq.ceremony.ethereum.org')
+    .action(async (options) => {
+        logger.info('Start try contribution');
+
+        const url = options.sequencer; 
+        const entropy = generateEntropy();
+        const sequencer = new seq.Sequencer(url);
+        const { provider, authUrl } = await authentication(sequencer);
+
+        console.log(authUrl);
+        console.log('');
+        console.log('');
+
+        const { sessionID } = await inquirer.prompt({
+            type: 'input',
+            name: 'sessionID',
+            message: 'Input your session ID: ',
+        });
+
+        const filename = `contribution_${sessionID}.json`;
+
+        const prevContributions = await tryAndWait(sequencer, sessionID);
+        fs.writeFileSync(filename, JSON.stringify(prevContributions, null, '\t'), (err) => {
+            if (err) throw err;
+        }); 
+
+        logger.info(`Previous contribution is written on ${filename}`);
+    });
+
+program
+    .command('execute-ceremony')
+    .description('Execute KZG Ceremony')
+    .option('-f, --file <contribution file>', 'Previous contribution file(json)', '')
+    .action(async (options) => {
+        logger.info('Start Execute Ceremony');
+
+        var filename = options.file;
+        const data = fs.readFileSync(filename);
+
+        const prevContributions = JSON.parse(data.toString())
+        const newContributions = await runCeremony(generateEntropy(), prevContributions);
+
+        filename = `new_contribution.json`;
+        fs.writeFileSync(filename, JSON.stringify(newContributions, null, '\t'), (err) => {
+            if (err) throw err;
+        }); 
+
+        logger.info(`New contribution is written on ${filename}`);
+    });
+
+program
+    .command('contribute')
+    .description('Submit contribution')
+    .option('-f, --file <contribution file>', 'New contribution file(json)', '')
+    .option('-session, --session_id <session id>', 'Session ID', '')
+    .option('-s, --sequencer <sequencer URL>', 'URL to be used as a sequencer', 'https://seq.ceremony.ethereum.org')
+    .action(async (options) => {
+        logger.info('Submit contribution');
+
+        const url = options.sequencer; 
+        const sessionID = options.session_id; 
+        const sequencer = new seq.Sequencer(url);
+
+        var filename = options.file;
+        const data = fs.readFileSync(filename);
+        const newContributions = JSON.parse(data.toString())
+
+        const receipt = await send_contribute(sequencer, sessionID, newContributions);
+
+        const receiptJson = JSON.stringify(receipt, null, '\t');
+        fs.writeFileSync('receipt.json', receiptJson, (err) => {
+            if (err) throw err;
+        }); 
+
+        logger.info(`Successfully contributed!`);
+        logger.info(receipt);
+    });
 
 
 program.parse(process.argv);
