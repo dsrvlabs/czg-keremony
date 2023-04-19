@@ -86,7 +86,7 @@ class Sequencer {
         } catch (err) {
             logger.error('contribute err', err);
             return {
-                status: err.resposne.status,
+                status: err.response.status,
                 msg: err.response.data.error,
             }
         }
